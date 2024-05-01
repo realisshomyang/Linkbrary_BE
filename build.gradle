@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '3.2.0'
-	id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+	id 'io.spring.dependency-management' version '1.1.4'
 }
 
 group = 'com.linkbrary'
@@ -35,6 +35,8 @@ dependencies {
 	testImplementation 'org.springframework.security:spring-security-test'
 	implementation 'org.springframework.boot:spring-boot-starter-validation'
 	implementation "org.hibernate.orm:hibernate-core:6.5.2.Final"
+	implementation 'org.hibernate.orm:hibernate-vector:6.4.0.Final'
+	implementation 'io.hypersistence:hypersistence-utils-hibernate-62:3.5.3'
 
 	// jwt
 	implementation 'io.jsonwebtoken:jjwt-api:0.11.5'
