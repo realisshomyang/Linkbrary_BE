@@ -40,4 +40,6 @@ public class Link extends BaseTimeEntity {
 
     private String thumbnail;
 
+    @OneToMany(mappedBy = "link", cascade = CascadeType.ALL)
+    private List<UserLink> userLinks;
 }
