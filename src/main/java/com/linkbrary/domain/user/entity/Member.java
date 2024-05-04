@@ -53,6 +53,18 @@ public class Member extends BaseTimeEntity implements UserDetails {
     @Cascade(org.hibernate.annotations.CascadeType.ALL)
     private List<String> roles = new ArrayList<>();
 
+    @OneToOne(mappedBy = "member", cascade = CascadeType.ALL)
+    private UserReminderSetting userReminderSetting;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<UserDirectory> userDirectories;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<UserLinkReminder> userLinkReminders;
+
+    @OneToMany(mappedBy = "member", cascade = CascadeType.ALL)
+    private List<UserDirectoryReminder> userDirectoryReminders;
+
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return this.roles.stream()
