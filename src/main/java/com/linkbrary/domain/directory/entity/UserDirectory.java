@@ -2,6 +2,8 @@ package com.linkbrary.domain.directory.entity;
 
 import com.linkbrary.common.entity.BaseTimeEntity;
 import com.linkbrary.domain.link.entity.UserLink;
+import com.linkbrary.domain.reminder.entity.UserDirectoryReminder;
+import com.linkbrary.domain.reminder.entity.UserLinkReminder;
 import com.linkbrary.domain.user.entity.Member;
 import lombok.*;
 
@@ -35,6 +37,9 @@ public class UserDirectory extends BaseTimeEntity {
 
     @OneToMany(mappedBy = "userDirectory", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<UserLink> userLinks;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userDirectory")
+    private UserDirectoryReminder userDirectoryReminder;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id", nullable = false)

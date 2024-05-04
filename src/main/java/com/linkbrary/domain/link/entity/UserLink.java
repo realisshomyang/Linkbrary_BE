@@ -2,6 +2,7 @@ package com.linkbrary.domain.link.entity;
 
 import com.linkbrary.common.entity.BaseTimeEntity;
 import com.linkbrary.domain.directory.entity.UserDirectory;
+import com.linkbrary.domain.reminder.entity.UserLinkReminder;
 import com.linkbrary.domain.user.entity.Member;
 import lombok.*;
 import jakarta.persistence.*;
@@ -44,6 +45,9 @@ public class UserLink extends BaseTimeEntity {
 
     @Column
     private boolean isAlarmed;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "userLink")
+    private UserLinkReminder userLinkReminder;
 
     public void updateUserDirectory(UserDirectory userDirectory) {
         this.userDirectory = userDirectory;
