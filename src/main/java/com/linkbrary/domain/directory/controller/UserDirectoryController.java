@@ -28,7 +28,7 @@ public class UserDirectoryController {
 
     @GetMapping("/{id}")
     @Operation(summary = "해당 디렉토리 조회 api (폴더 몇개, 링크)")
-    public ApiResponse<UserDirectoryResponseDTO> getDirectory(@Parameter(description = "조회할 디렉토리의 ID")  @PathVariable Long id) {
+    public ApiResponse<UserDirectoryResponseDTO> getDirectory(@Parameter(description = "조회할 디렉토리의 ID") @PathVariable Long id) {
         return ApiResponse.onSuccess(userDirectoryService.getDirectory(id));
     }
 
@@ -50,6 +50,11 @@ public class UserDirectoryController {
         return ApiResponse.onSuccess(userDirectoryService.updateDirectoryLocation(updateUserDirectoryLocationRequestDTO));
     }
 
-
+    @Operation(summary = "디렉토리 삭제 API")
+    @DeleteMapping("/delete")
+    public ApiResponse<String> deleteDirectory(@Parameter(description = "삭제할 디렉토리의 ID") @RequestParam Long id) {
+        userDirectoryService.deleteDirectory(id);
+        return ApiResponse.onSuccess("삭제 성공");
+    }
 
 }

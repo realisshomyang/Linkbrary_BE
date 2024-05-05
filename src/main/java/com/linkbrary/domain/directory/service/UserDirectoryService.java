@@ -9,6 +9,7 @@ import com.linkbrary.domain.directory.dto.UpdateUserDirectoryLocationRequestDTO;
 import com.linkbrary.domain.directory.dto.UserDirectoryResponseDTO;
 import com.linkbrary.domain.directory.entity.UserDirectory;
 import com.linkbrary.domain.directory.repository.UserDirectoryRepository;
+import com.linkbrary.domain.link.repository.UserLinkRepository;
 import com.linkbrary.domain.user.entity.Member;
 import com.linkbrary.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +24,7 @@ public class UserDirectoryService {
 
     private final UserDirectoryRepository userDirectoryRepository;
     private final UserService userService;
+    private final UserLinkRepository userLinkRepository;
 
     @Transactional(readOnly = true)
     public String getAllDirectoryNames() {
@@ -102,4 +104,19 @@ public class UserDirectoryService {
         return UserDirectoryResponseDTO.from(currentDirectory);
     }
 
+    @Transactional
+    public void deleteDirectory(Long id) {
+        UserDirectory directoryToDelete = userDirectoryRepository.findById(id)
+                .orElseThrow(() -> new UserDirectoryHandler(ErrorCode.DIRECTORY_NOT_FOUND));
+        UserDirectory parentFolder = directoryToDelete.getParentFolder();
+        // 자식 폴더들을 상위 폴더로 이동
+        directoryToDelete.getChildFolders().forEach(child -> child.updateParentFolder(parentFolder));
+        // 링크들을 상위 폴더로 이동
+        directoryToDelete.getUserLinks().forEach(link -> link.updateUserDirectory(parentFolder));
+        // 변경 사항 저장
+        userDirectoryRepository.saveAll(directoryToDelete.getChildFolders());
+        userLinkRepository.saveAll(directoryToDelete.getUserLinks());
+        // 디렉토리 삭제
+        userDirectoryRepository.delete(directoryToDelete);
+    }
 }
