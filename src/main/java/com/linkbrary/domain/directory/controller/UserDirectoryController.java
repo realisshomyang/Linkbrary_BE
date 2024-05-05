@@ -29,4 +29,12 @@ public class UserDirectoryController {
     public ApiResponse<UserDirectoryResponseDTO> getDirectory(@Parameter(description = "조회할 디렉토리의 ID")  @PathVariable Long id) {
         return ApiResponse.onSuccess(userDirectoryService.getDirectory(id));
     }
+
+    @GetMapping
+    @Operation(summary = "유저가 보유한 모든 디렉토리 제공 api")
+    public String getUserDirectory() {
+        return userDirectoryService.getAllDirectoryNames();
+    }
+
+
 }

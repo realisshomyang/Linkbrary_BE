@@ -1,7 +1,6 @@
 package com.linkbrary.domain.directory.service;
 
 
-import com.linkbrary.common.response.ApiResponse;
 import com.linkbrary.common.response.code.ErrorCode;
 import com.linkbrary.common.response.exception.handler.UserDirectoryHandler;
 import com.linkbrary.domain.directory.dto.CreateUserDirectoryRequestDTO;
@@ -14,12 +13,37 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class UserDirectoryService {
 
     private final UserDirectoryRepository userDirectoryRepository;
     private final UserService userService;
+
+    @Transactional(readOnly = true)
+    public String getAllDirectoryNames() {
+        Member member = userService.getMemberFromToken();
+        List<UserDirectory> rootDirectories = userDirectoryRepository.findByMember(member).stream()
+                .filter(directory -> directory.getParentFolder() == null)
+                .toList();
+
+        StringBuilder directoryNames = new StringBuilder();
+        rootDirectories.forEach(directory -> appendDirectoryNames(directory, directoryNames, ""));
+        return directoryNames.toString();
+    }
+    private void appendDirectoryNames(UserDirectory directory, StringBuilder directoryNames, String indent) {
+        directoryNames.append(indent)
+                .append("|-- ")
+                .append(directory.getDirectoryName())
+                .append(" (ID: ")
+                .append(directory.getId())
+                .append(")\n");
+
+        directory.getChildFolders().forEach(child -> appendDirectoryNames(child, directoryNames, indent + "    "));
+    }
+
 
     @Transactional
     public UserDirectoryResponseDTO createDirectory(CreateUserDirectoryRequestDTO createUserDirectoryRequestDTO) {
