@@ -5,6 +5,7 @@ import com.linkbrary.common.response.code.ErrorCode;
 import com.linkbrary.common.response.exception.handler.UserDirectoryHandler;
 import com.linkbrary.domain.directory.dto.CreateUserDirectoryRequestDTO;
 import com.linkbrary.domain.directory.dto.UpdateDirectoryNameRequestDTO;
+import com.linkbrary.domain.directory.dto.UpdateUserDirectoryLocationRequestDTO;
 import com.linkbrary.domain.directory.dto.UserDirectoryResponseDTO;
 import com.linkbrary.domain.directory.entity.UserDirectory;
 import com.linkbrary.domain.directory.repository.UserDirectoryRepository;
@@ -34,6 +35,7 @@ public class UserDirectoryService {
         rootDirectories.forEach(directory -> appendDirectoryNames(directory, directoryNames, ""));
         return directoryNames.toString();
     }
+
     private void appendDirectoryNames(UserDirectory directory, StringBuilder directoryNames, String indent) {
         directoryNames.append(indent)
                 .append("|-- ")
@@ -83,9 +85,21 @@ public class UserDirectoryService {
                 .orElseThrow(() -> new UserDirectoryHandler(ErrorCode.DIRECTORY_NOT_FOUND));
         directory.updateDirectoryName(updateDirectoryNameRequestDTO.getName());
         directory = userDirectoryRepository.save(directory);
-        // Return the updated directory information
         return UserDirectoryResponseDTO.from(directory);
     }
 
+    @Transactional
+    public UserDirectoryResponseDTO updateDirectoryLocation(UpdateUserDirectoryLocationRequestDTO updateUserDirectoryLocationRequestDTO) {
+        UserDirectory currentDirectory = userDirectoryRepository.findById(updateUserDirectoryLocationRequestDTO.getDirectoryId()).orElseThrow(() -> new UserDirectoryHandler(ErrorCode.DIRECTORY_NOT_FOUND));
+        if (updateUserDirectoryLocationRequestDTO.getRequestParentDirectoryId() != null) {
+            UserDirectory parentFolder = userDirectoryRepository.findById(updateUserDirectoryLocationRequestDTO.getRequestParentDirectoryId())
+                    .orElseThrow(() -> new UserDirectoryHandler(ErrorCode.DIRECTORY_NOT_FOUND));
+            currentDirectory.updateParentFolder(parentFolder);
+        } else {
+            currentDirectory.updateParentFolder(null);
+        }
+        userDirectoryRepository.save(currentDirectory);
+        return UserDirectoryResponseDTO.from(currentDirectory);
+    }
 
 }
