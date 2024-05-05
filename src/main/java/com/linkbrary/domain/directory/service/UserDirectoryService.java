@@ -4,6 +4,7 @@ package com.linkbrary.domain.directory.service;
 import com.linkbrary.common.response.code.ErrorCode;
 import com.linkbrary.common.response.exception.handler.UserDirectoryHandler;
 import com.linkbrary.domain.directory.dto.CreateUserDirectoryRequestDTO;
+import com.linkbrary.domain.directory.dto.UpdateDirectoryNameRequestDTO;
 import com.linkbrary.domain.directory.dto.UserDirectoryResponseDTO;
 import com.linkbrary.domain.directory.entity.UserDirectory;
 import com.linkbrary.domain.directory.repository.UserDirectoryRepository;
@@ -74,4 +75,17 @@ public class UserDirectoryService {
         UserDirectory userDirectory = userDirectoryRepository.findById(id).orElseThrow(() -> new UserDirectoryHandler(ErrorCode.DIRECTORY_NOT_FOUND));
         return UserDirectoryResponseDTO.from(userDirectory);
     }
+
+    @Transactional
+    public UserDirectoryResponseDTO updateDirectoryName(UpdateDirectoryNameRequestDTO updateDirectoryNameRequestDTO) {
+        Member member = userService.getMemberFromToken();
+        UserDirectory directory = userDirectoryRepository.findById(updateDirectoryNameRequestDTO.getId())
+                .orElseThrow(() -> new UserDirectoryHandler(ErrorCode.DIRECTORY_NOT_FOUND));
+        directory.updateDirectoryName(updateDirectoryNameRequestDTO.getName());
+        directory = userDirectoryRepository.save(directory);
+        // Return the updated directory information
+        return UserDirectoryResponseDTO.from(directory);
+    }
+
+
 }

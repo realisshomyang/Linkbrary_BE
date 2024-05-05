@@ -3,6 +3,7 @@ package com.linkbrary.domain.directory.controller;
 
 import com.linkbrary.common.response.ApiResponse;
 import com.linkbrary.domain.directory.dto.CreateUserDirectoryRequestDTO;
+import com.linkbrary.domain.directory.dto.UpdateDirectoryNameRequestDTO;
 import com.linkbrary.domain.directory.dto.UserDirectoryResponseDTO;
 import com.linkbrary.domain.directory.service.UserDirectoryService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -35,6 +36,14 @@ public class UserDirectoryController {
     public String getUserDirectory() {
         return userDirectoryService.getAllDirectoryNames();
     }
+
+    @Operation(summary = "디렉토리 이름 수정 api")
+    @PatchMapping("/names")
+    public ApiResponse<UserDirectoryResponseDTO> updateDirectoryName(@Valid @RequestBody UpdateDirectoryNameRequestDTO updateDirectoryNameRequestDTO) {
+        return ApiResponse.onSuccess(userDirectoryService.updateDirectoryName(updateDirectoryNameRequestDTO));
+    }
+
+
 
 
 }
