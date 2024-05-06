@@ -5,6 +5,9 @@ import com.linkbrary.common.jwt.SecurityUtil;
 import com.linkbrary.common.jwt.TokenInfo;
 import com.linkbrary.common.response.code.ErrorCode;
 import com.linkbrary.common.response.code.SuccessCode;
+import com.linkbrary.domain.directory.entity.UserDirectory;
+import com.linkbrary.domain.directory.repository.UserDirectoryRepository;
+import com.linkbrary.domain.reminder.entity.UserReminderSetting;
 import com.linkbrary.domain.user.dto.UserLoginRequestDTO;
 import com.linkbrary.domain.user.dto.UserResponseDTO;
 import com.linkbrary.domain.user.dto.UserSignUpRequestDto;
@@ -14,8 +17,10 @@ import com.linkbrary.common.response.ApiResponse;
 import com.linkbrary.domain.user.entity.Authority;
 import com.linkbrary.domain.user.repository.MemberRepository;
 
+import java.time.LocalTime;
 import java.util.Collections;
 
+import com.linkbrary.domain.user.repository.UserReminderSettingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -32,6 +37,8 @@ public class UserService {
 
     private final MemberRepository memberRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserReminderSettingRepository userReminderSettingRepository;
+    private final UserDirectoryRepository userDirectoryRepository;
     private final JwtTokenProvider jwtTokenProvider;
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
 
@@ -46,6 +53,39 @@ public class UserService {
                 .roles(Collections.singletonList(Authority.ROLE_USER.name()))
                 .build();
         memberRepository.save(user);
+        UserReminderSetting userReminderSetting = UserReminderSetting
+                .builder()
+                .member(user)
+                .unreadFolderAlert(true)
+                .unreadFolderAlertCount(10L)
+                .unreadTimeAlert(true)
+                .unreadAlertTime(LocalTime.NOON)
+                .build();
+        userReminderSettingRepository.save(userReminderSetting);
+        UserDirectory userDirectory1 = UserDirectory.builder()
+                .directoryName("뉴스 및 미디어")
+                .member(user)
+                .isAlarmed(false)
+                .build();
+        UserDirectory userDirectory2 = UserDirectory.builder()
+                .directoryName("기술 및 개발")
+                .member(user)
+                .isAlarmed(false)
+                .build();
+        UserDirectory userDirectory3 = UserDirectory.builder()
+                .directoryName("학습 자료")
+                .member(user)
+                .isAlarmed(false)
+                .build();
+        UserDirectory userDirectory4 = UserDirectory.builder()
+                .directoryName("쇼핑")
+                .member(user)
+                .isAlarmed(false)
+                .build();
+        userDirectoryRepository.save(userDirectory1);
+        userDirectoryRepository.save(userDirectory2);
+        userDirectoryRepository.save(userDirectory3);
+        userDirectoryRepository.save(userDirectory4);
         return ApiResponse.of(SuccessCode._SIGNUP_SUCCESS, "회원가입 성공!");
     }
 
@@ -67,6 +107,7 @@ public class UserService {
             TokenInfo tokenInfo = jwtTokenProvider.generateToken(authentication);
             Member member = memberRepository.findByEmail(userLoginRequestDTO.getEmail())
                     .orElseThrow();
+            member.updateToken(userLoginRequestDTO.getToken());
             memberRepository.save(member);
             return ApiResponse.of(SuccessCode._LOGIN_SUCCESS, UserResponseDTO.builder().tokenInfo(tokenInfo).nickName(member.getNickname())
                     .build());
@@ -127,14 +168,5 @@ public class UserService {
                 .orElseThrow(() -> new UserHandler(ErrorCode.UNAUTHORIZED));
         return member;
     }
-
-    public Member findByEmail(String email) {
-        Member member =
-                memberRepository
-                        .findByEmail(email)
-                        .orElseThrow();
-        return member;
-    }
-
 
 }
