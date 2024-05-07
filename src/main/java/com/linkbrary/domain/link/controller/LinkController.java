@@ -3,8 +3,6 @@ package com.linkbrary.domain.link.controller;
 import com.linkbrary.common.response.ApiResponse;
 import com.linkbrary.domain.link.dto.CreateUserLinkRequestDTO;
 import com.linkbrary.domain.link.dto.CreateLinkRequestDTO;
-import com.linkbrary.domain.link.dto.UpdateLinkLocationDTO;
-import com.linkbrary.domain.link.dto.UpdateUserLinkRequestDTO;
 import com.linkbrary.domain.link.service.LinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -29,6 +27,12 @@ public class LinkController {
     @GetMapping
     public ApiResponse getLink(@Parameter(description = "단일 링크(user링크 아님) ID") @RequestParam Long linkId) {
         return linkService.getLink(linkId);
+    }
+
+    @Operation(summary = "유저 링크 저장")
+    @PostMapping("/users")
+    public ApiResponse createUserLink(@Valid @RequestBody CreateUserLinkRequestDTO createUserLinkRequestDTO) {
+        return linkService.createUserLink(createUserLinkRequestDTO);
     }
 
 }
