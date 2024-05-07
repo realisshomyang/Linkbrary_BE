@@ -3,11 +3,16 @@ package com.linkbrary.domain.link.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.linkbrary.common.response.ApiResponse;
+import com.linkbrary.common.response.code.ErrorCode;
+import com.linkbrary.common.response.exception.handler.UserLinkHandler;
 import com.linkbrary.domain.link.dto.*;
 import com.linkbrary.domain.link.entity.Link;
 import com.linkbrary.domain.link.repository.LinkRepository;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+
+
 import static com.linkbrary.common.util.CallExternalApi.*;
 
 
@@ -22,6 +27,10 @@ public class LinkService {
         Link newLink = mapJsonToLink(jsonString, createLinkRequestDTO.getUrl());
         linkRepository.save(newLink);
         return ApiResponse.onSuccess("hello");
+    }
+
+    public ApiResponse getLink(Long linkId) {
+        return ApiResponse.onSuccess(LinkResponseDTO.from(linkRepository.findById(linkId).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND))));
     }
 
     public static Link mapJsonToLink(String jsonString, String url) {
