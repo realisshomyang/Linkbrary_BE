@@ -86,6 +86,12 @@ public class LinkService {
         return newLink;
     }
 
+    public ApiResponse deleteUserLink(Long linkId) {
+        UserLink userLink = userLinkRepository.findById(linkId).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
+        userLinkRepository.delete(userLink);
+        return ApiResponse.onSuccess("삭제 성공");
+    }
+
     public static Link mapJsonToLink(String jsonString, String url) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
@@ -183,23 +189,10 @@ public class LinkService {
         return directoryInfo.getName() + directoryInfo.getId().toString();
     }
 
-
-    public ApiResponse deleteUserLink(Long linkId) {
-        UserLink userLink = userLinkRepository.findById(linkId).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
-        userLinkRepository.delete(userLink);
-        return ApiResponse.onSuccess("삭제 성공");
+    public ApiResponse updateUserLink(UpdateUserLinkRequestDTO updateUserLinkRequestDTO) {
+        UserLink userLink = userLinkRepository.findById(updateUserLinkRequestDTO.getId()).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
+        return ApiResponse.onSuccess(UserLinkResponseDTO.from(userLink));
     }
-
-    public List<UserLinkResponseDTO> testVector() {
-        UserLink link = userLinkRepository.findById(17L).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
-        List<UserLink> links = userLinkRepository.findNearestNeighbors(link.getId());
-        return links.stream().map(UserLinkResponseDTO::from).toList();
-    }
-
-    public String testEmbedding(String keyword) {
-        return Arrays.toString(handleEmbeddingPostRequest(keyword));
-    }
-
 
 }
 

@@ -3,6 +3,8 @@ package com.linkbrary.domain.link.controller;
 import com.linkbrary.common.response.ApiResponse;
 import com.linkbrary.domain.link.dto.CreateUserLinkRequestDTO;
 import com.linkbrary.domain.link.dto.CreateLinkRequestDTO;
+import com.linkbrary.domain.link.dto.UpdateLinkLocationDTO;
+import com.linkbrary.domain.link.dto.UpdateUserLinkRequestDTO;
 import com.linkbrary.domain.link.service.LinkService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -39,6 +41,12 @@ public class LinkController {
     @DeleteMapping("/users/{id}")
     private ApiResponse deleteUserLink(@PathVariable Long id) {
         return linkService.deleteUserLink(id);
+    }
+
+    @Operation(summary = "유저 링크 업데이트")
+    @PutMapping("/users")
+    private ApiResponse updateUserLink(@Valid @RequestBody UpdateUserLinkRequestDTO updateLinkRequestDTO) {
+        return linkService.updateUserLink(updateLinkRequestDTO);
     }
 
 }
