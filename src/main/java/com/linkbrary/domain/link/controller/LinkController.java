@@ -55,4 +55,11 @@ public class LinkController {
         linkService.updateLinkReadStatus(id);
         return ApiResponse.onSuccess("Link read status updated successfully");
     }
+
+    @Operation(summary = "링크 디렉토리 위치 업데이트 API")
+    @PutMapping("/update-location")
+    public ApiResponse updateLinkLocation(@RequestBody UpdateLinkLocationDTO updateLinkLocationDTO) {
+        return ApiResponse.onSuccess(linkService.updateLinkLocation(updateLinkLocationDTO));
+    }
+
 }

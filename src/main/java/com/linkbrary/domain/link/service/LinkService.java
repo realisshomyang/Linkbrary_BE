@@ -201,6 +201,16 @@ public class LinkService {
         userLinkRepository.save(userLink);
     }
 
+    public UserLinkResponseDTO updateLinkLocation(UpdateLinkLocationDTO updateLinkLocationDTO) {
+        UserLink userLink = userLinkRepository.findById(updateLinkLocationDTO.getLinkId())
+                .orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
+        UserDirectory userDirectory = userDirectoryRepository.findById(updateLinkLocationDTO.getMovingDirectoryId())
+                .orElseThrow(() -> new UserDirectoryHandler(ErrorCode.DIRECTORY_NOT_FOUND));
+        userLink.updateUserDirectory(userDirectory);
+        userLinkRepository.save(userLink);
+        return UserLinkResponseDTO.from(userLink);
+    }
+
 }
 
 
