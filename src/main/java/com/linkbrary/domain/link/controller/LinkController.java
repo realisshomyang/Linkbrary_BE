@@ -49,4 +49,10 @@ public class LinkController {
         return linkService.updateUserLink(updateLinkRequestDTO);
     }
 
+    @Operation(summary = "유저 링크 읽음 상태 업데이트 API")
+    @PatchMapping("/update-read-status/{id}")
+    public ApiResponse updateLinkReadStatus(@Parameter(description = "읽음 여부 업데이트할 id") @PathVariable Long id) {
+        linkService.updateLinkReadStatus(id);
+        return ApiResponse.onSuccess("Link read status updated successfully");
+    }
 }

@@ -194,6 +194,13 @@ public class LinkService {
         return ApiResponse.onSuccess(UserLinkResponseDTO.from(userLink));
     }
 
+    public void updateLinkReadStatus(Long linkId) {
+        UserLink userLink = userLinkRepository.findById(linkId)
+                .orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
+        userLink.updateIsRead();
+        userLinkRepository.save(userLink);
+    }
+
 }
 
 
