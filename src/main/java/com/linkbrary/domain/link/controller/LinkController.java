@@ -35,4 +35,10 @@ public class LinkController {
         return linkService.createUserLink(createUserLinkRequestDTO);
     }
 
+    @Operation(summary = "유저 링크 삭제")
+    @DeleteMapping("/users/{id}")
+    private ApiResponse deleteUserLink(@PathVariable Long id) {
+        return linkService.deleteUserLink(id);
+    }
+
 }

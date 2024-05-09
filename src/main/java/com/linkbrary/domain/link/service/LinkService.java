@@ -19,7 +19,13 @@ import com.linkbrary.domain.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static com.linkbrary.common.util.CallExternalApi.*;
 
@@ -177,9 +183,24 @@ public class LinkService {
         return directoryInfo.getName() + directoryInfo.getId().toString();
     }
 
+
+    public ApiResponse deleteUserLink(Long linkId) {
+        UserLink userLink = userLinkRepository.findById(linkId).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
+        userLinkRepository.delete(userLink);
+        return ApiResponse.onSuccess("삭제 성공");
+    }
+
+    public List<UserLinkResponseDTO> testVector() {
+        UserLink link = userLinkRepository.findById(17L).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
+        List<UserLink> links = userLinkRepository.findNearestNeighbors(link.getId());
+        return links.stream().map(UserLinkResponseDTO::from).toList();
+    }
+
     public String testEmbedding(String keyword) {
         return Arrays.toString(handleEmbeddingPostRequest(keyword));
     }
+
+
 }
 
 
