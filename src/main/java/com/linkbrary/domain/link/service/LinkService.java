@@ -211,7 +211,83 @@ public class LinkService {
         return UserLinkResponseDTO.from(userLink);
     }
 
+    public List<SearchLinkResponseDTO> search(Integer mode, Integer dateMode, String startDate, String endDate, String keyword) {
+        // 날짜 범위 처리
+        Member member = userService.getMemberFromToken();
+        LocalDateTime startDateTime;
+        LocalDateTime endDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+
+        switch (dateMode) {
+            case 1:
+                // 전체 기간
+                startDateTime = endDateTime.minusYears(100); // 예시: 100년 전부터 현재까지
+                break;
+            case 2:
+                // 지난 1주일
+                startDateTime = endDateTime.minusWeeks(1);
+                break;
+            case 3:
+                // 지난 1개월
+                startDateTime = endDateTime.minusMonths(1);
+                break;
+            case 4:
+                // 사용자 지정
+                if (startDate != null && endDate != null) {
+                    LocalDate startLocalDate = LocalDate.parse(startDate, formatter);
+                    LocalDate endLocalDate = LocalDate.parse(endDate, formatter);
+                    startDateTime = startLocalDate.atStartOfDay();
+                    endDateTime = endLocalDate.atTime(23, 59, 59);
+                } else {
+                    throw new IllegalArgumentException("사용자 지정 날짜 범위의 경우 시작 날짜와 종료 날짜를 모두 제공해야 합니다.");
+                }
+                break;
+            default:
+                throw new IllegalArgumentException("잘못된 날짜 범위 모드입니다: " + dateMode);
+        }
+        // 검색 로직 구현
+        List<UserLink> userLinks;
+        switch (mode) {
+            case 1:
+                List<UserLink> titleLinks = userLinkRepository.findTop3ByMemberAndTitleContainingAndCreatedAtBetween(member, keyword, startDateTime, endDateTime);
+                List<UserLink> contentLinks = userLinkRepository.findTop3ByMemberAndLink_ContentContainingAndCreatedAtBetween(member
+                        , keyword, startDateTime, endDateTime);
+                // 두 리스트 병합, 중복 제거
+                userLinks = Stream.concat(titleLinks.stream(), contentLinks.stream())
+                        .distinct()
+                        .limit(3)
+                        .collect(Collectors.toList());
+            case 2:
+                // 메모 검색
+                userLinks = userLinkRepository.findTop3ByMemberAndMemoContainingAndCreatedAtBetween(member, keyword, startDateTime, endDateTime);
+                break;
+            case 3:
+                // summary 검색
+                userLinks = userLinkRepository.findTop3ByMemberAndLink_SummaryContainingAndCreatedAtBetween(member, keyword, startDateTime, endDateTime);
+                break;
+
+            case 4:
+                float[] keywordEmbedding = handleEmbeddingPostRequest(keyword);
+                userLinks = userLinkRepository.findNearestNeighborsByEmbedding(Arrays.toString(keywordEmbedding));
+                break;
+            default:
+                throw new IllegalArgumentException("잘못된 검색 모드입니다: " + mode);
+        }
+
+        return userLinks.stream()
+                .map(SearchLinkResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
+    public List<UserLinkResponseDTO> testVector() {
+        UserLink link = userLinkRepository.findById(17L).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
+        List<UserLink> links = userLinkRepository.findNearestNeighbors(link.getId());
+        return links.stream().map(UserLinkResponseDTO::from).toList();
+    }
+
+    public String testEmbedding(String keyword) {
+        return Arrays.toString(handleEmbeddingPostRequest(keyword));
+    }
+
+
 }
-
-
-

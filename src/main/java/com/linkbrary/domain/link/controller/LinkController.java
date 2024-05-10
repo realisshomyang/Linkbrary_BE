@@ -62,4 +62,21 @@ public class LinkController {
         return ApiResponse.onSuccess(linkService.updateLinkLocation(updateLinkLocationDTO));
     }
 
+
+    @Operation(summary = "유저 링크 검색 API")
+    @GetMapping("/search")
+    public ApiResponse searchLink(
+            @Parameter(description = "검색 모드 (1 제목+본문 , 2 메모 , 3 요약 , 4 유사도 검색(벡터 검색)", example = "1", required = true)
+            @RequestParam Integer mode,
+            @Parameter(description = "날짜 범위 모드 (1 전체 기간 , 2 지난 일주일 , 3 지난 1개월 , 4 커스텀 범위)", example = "1", required = true)
+            @RequestParam Integer dateRangeMode,
+            @Parameter(description = "시작 날짜 (yyyy-MM-dd) 날짜 범위 모드 4일 때만 입력", example = "2023-01-01")
+            @RequestParam(required = false) String startDate,
+            @Parameter(description = "종료 날짜 (yyyy-MM-dd) 날짜 범위 모드 4일 때만 입력", example = "2023-12-31")
+            @RequestParam(required = false) String endDate,
+            @Parameter(description = "검색어", example = "안녕하세요", required = true)
+            @RequestParam String search) {
+        return ApiResponse.onSuccess(linkService.search(mode, dateRangeMode, startDate, endDate, search));
+    }
+
 }
