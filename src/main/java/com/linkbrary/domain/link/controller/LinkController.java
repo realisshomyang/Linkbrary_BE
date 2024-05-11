@@ -79,4 +79,10 @@ public class LinkController {
         return ApiResponse.onSuccess(linkService.search(mode, dateRangeMode, startDate, endDate, search));
     }
 
+    @Operation(summary = "linkbrary")
+    @GetMapping("/linkbrary")
+    public ApiResponse linkbrary(@RequestParam String url) {
+        return ApiResponse.onSuccess(linkService.searchByLink(url));
+    }
+
 }

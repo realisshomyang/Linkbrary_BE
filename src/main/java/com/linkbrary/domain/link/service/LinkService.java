@@ -279,6 +279,11 @@ public class LinkService {
                 .collect(Collectors.toList());
     }
 
+    public List<UserLink> searchByContentForMember(Member member, String keyword, LocalDateTime start, LocalDateTime end) {
+        Long memberId = member.getId();
+        return userLinkRepository.searchByContentForMember(memberId, keyword, start, end);
+    }
+
     public List<UserLinkResponseDTO> testVector() {
         UserLink link = userLinkRepository.findById(17L).orElseThrow(() -> new UserLinkHandler(ErrorCode.LINK_NOT_FOUND));
         List<UserLink> links = userLinkRepository.findNearestNeighbors(link.getId());
@@ -289,5 +294,12 @@ public class LinkService {
         return Arrays.toString(handleEmbeddingPostRequest(keyword));
     }
 
+    public List<SearchLinkResponseDTO> searchByLink(String url) {
+        String embeddingString = callExternalGetApi(url, 2);
+        float[] embedding = parseEmbedding(embeddingString, "embed");
+        long startTime = System.nanoTime();
+        List<UserLink> links = userLinkRepository.findNearestNeighborsByEmbedding(Arrays.toString(embedding));
+        return links.stream().map(SearchLinkResponseDTO::from).collect(Collectors.toList());
+    }
 
 }
