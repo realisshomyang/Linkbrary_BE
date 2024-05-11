@@ -41,6 +41,12 @@ public class TestController {
         return linkService.getDirectory();
     }
 
+    @Operation(summary = "벡터 서치 test용 api")
+    @GetMapping("/test/vector-search")
+    public ApiResponse getVectorSearch() {
+        return ApiResponse.onSuccess(linkService.testVector());
+    }
+
     @Operation(summary = "임베딩 추출")
     @GetMapping("/test/keyword-embedding")
     public ApiResponse getKeywordEmbedding(@RequestParam String url) {
