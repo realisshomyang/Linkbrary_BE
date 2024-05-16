@@ -21,6 +21,9 @@ public class UserLoginRequestDTO {
     @Schema(description = "비밀번호", example = "admin1234")
     private String password;
 
+    @Schema(description = "기기 토큰" , example = "ExponentPushToken[gUK8esHdr7943B94r2yevH]")
+    private String token;
+
     public UsernamePasswordAuthenticationToken toAuthentication() {
         return new UsernamePasswordAuthenticationToken(email, password);
     }
