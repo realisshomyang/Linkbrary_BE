@@ -24,4 +24,9 @@ public class ReminderController {
         return ApiResponse.onSuccess(reminderService.updateUserReminderSetting(createUserReminderSettingRequestDTO));
     }
 
+    @Operation(summary = "유저가 설정한 리마인더 설정(10개 ,, etc) 가져오는 api")
+    @GetMapping("/users")
+    public ApiResponse<UserReminderSettingResponseDTO> getUserReminderSetting() {
+        return ApiResponse.onSuccess(reminderService.getUserReminderSetting());
+    }
 }
