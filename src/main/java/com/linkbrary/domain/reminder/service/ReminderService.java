@@ -4,15 +4,11 @@ import com.linkbrary.common.response.code.ErrorCode;
 import com.linkbrary.common.response.exception.handler.ReminderHandler;
 import com.linkbrary.common.response.exception.handler.UserHandler;
 import com.linkbrary.common.response.exception.handler.UserLinkHandler;
-import com.linkbrary.domain.directory.entity.UserDirectory;
-import com.linkbrary.domain.directory.repository.UserDirectoryRepository;
 import com.linkbrary.domain.link.entity.UserLink;
 import com.linkbrary.domain.link.repository.UserLinkRepository;
 import com.linkbrary.domain.reminder.dto.*;
-import com.linkbrary.domain.reminder.entity.UserDirectoryReminder;
 import com.linkbrary.domain.reminder.entity.UserLinkReminder;
 import com.linkbrary.domain.reminder.entity.UserReminderSetting;
-import com.linkbrary.domain.reminder.repository.UserDirectoryReminderRepository;
 import com.linkbrary.domain.reminder.repository.UserLinkReminderRepository;
 import com.linkbrary.domain.user.entity.Member;
 import com.linkbrary.domain.user.repository.UserReminderSettingRepository;
@@ -29,19 +25,18 @@ import java.util.stream.Collectors;
 public class ReminderService {
     private final UserService userService;
     private final UserLinkRepository userLinkRepository;
-    private final UserDirectoryRepository userDirectoryRepository;
     private final UserLinkReminderRepository userLinkReminderRepository;
-    private final UserDirectoryReminderRepository userDirectoryReminderRepository;
     private final UserReminderSettingRepository userReminderSettingRepository;
+
     public UserReminderSettingResponseDTO getUserReminderSetting() {
         Member member = userService.getMemberFromToken();
         UserReminderSetting userReminderSetting = userReminderSettingRepository.findByMember(member).orElseThrow(() -> new UserHandler(ErrorCode.USER_REMINDER_SETTING_NOT_FOUND));
         return UserReminderSettingResponseDTO.from(userReminderSetting);
     }
 
-    public UserReminderSettingResponseDTO updateUserReminderSetting(CreateUserReminderSettingRequestDTO createUserReminderSettingRequestDTO){
+    public UserReminderSettingResponseDTO updateUserReminderSetting(CreateUserReminderSettingRequestDTO createUserReminderSettingRequestDTO) {
         Member member = userService.getMemberFromToken();
-        UserReminderSetting userReminderSetting = userReminderSettingRepository.findByMember(member).orElseThrow(()-> new UserHandler(ErrorCode.USER_REMINDER_SETTING_NOT_FOUND));
+        UserReminderSetting userReminderSetting = userReminderSettingRepository.findByMember(member).orElseThrow(() -> new UserHandler(ErrorCode.USER_REMINDER_SETTING_NOT_FOUND));
         userReminderSetting.updateUserReminderSetting(createUserReminderSettingRequestDTO.getUnreadAlertTime(), createUserReminderSettingRequestDTO.isUnreadTimeAlert(), createUserReminderSettingRequestDTO.getUnreadFolderAlertCount(), createUserReminderSettingRequestDTO.isUnreadFolderAlert());
         userReminderSetting = userReminderSettingRepository.save(userReminderSetting);
         return UserReminderSettingResponseDTO.from(userReminderSetting);
@@ -72,5 +67,14 @@ public class ReminderService {
         return userLinkReminders.stream()
                 .map(UserLinkReminderResponseDTO::from)
                 .collect(Collectors.toList());
+    }
+
+    public UserLinkReminderResponseDTO updateLinkReminder(ReminderRequestDTO updateRequestDTO) {
+        UserLinkReminder userLinkReminder = userLinkReminderRepository.findById(updateRequestDTO.getId())
+                .orElseThrow(() -> new ReminderHandler(ErrorCode.REMINDER_NOT_FOUND));
+        userLinkReminder.updateReminderTime(updateRequestDTO.getReminderTime());
+        userLinkReminder.updateReminderDays(updateRequestDTO.getReminderDays());
+        userLinkReminder = userLinkReminderRepository.save(userLinkReminder);
+        return UserLinkReminderResponseDTO.from(userLinkReminder);
     }
 }

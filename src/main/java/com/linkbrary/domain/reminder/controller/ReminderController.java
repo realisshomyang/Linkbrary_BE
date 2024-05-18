@@ -42,4 +42,10 @@ public class ReminderController {
         return ApiResponse.onSuccess(reminderService.getAllLinkReminders());
     }
 
+    @Operation(summary = "유저가 설정한 링크 리마인더 수정")
+    @PutMapping("/links")
+    public ApiResponse<UserLinkReminderResponseDTO> updateLinkReminder(@Valid @RequestBody ReminderRequestDTO updateRequestDTO) {
+        return ApiResponse.onSuccess(reminderService.updateLinkReminder(updateRequestDTO));
+    }
+
 }
