@@ -36,4 +36,10 @@ public class ReminderController {
         return ApiResponse.onSuccess(reminderService.createLinkReminder(createLinkReminderRequestDTO));
     }
 
+    @Operation(summary = "유저가 링크에 대해 설정한 모든 리마인더 조회")
+    @GetMapping("/links")
+    public ApiResponse<List<UserLinkReminderResponseDTO>> getLinkReminderSettings() {
+        return ApiResponse.onSuccess(reminderService.getAllLinkReminders());
+    }
+
 }
