@@ -48,4 +48,11 @@ public class ReminderController {
         return ApiResponse.onSuccess(reminderService.updateLinkReminder(updateRequestDTO));
     }
 
+    @Operation(summary = "유저가 설정한 링크 리마인더 삭제")
+    @DeleteMapping("/links/{id}")
+    public ApiResponse<String> deleteLinkReminder(@PathVariable Long id) {
+        reminderService.deleteLinkReminder(id);
+        return ApiResponse.onSuccess("Link reminder deleted successfully");
+    }
+
 }

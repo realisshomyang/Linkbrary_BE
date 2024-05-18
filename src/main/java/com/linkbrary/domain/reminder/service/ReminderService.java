@@ -77,4 +77,11 @@ public class ReminderService {
         userLinkReminder = userLinkReminderRepository.save(userLinkReminder);
         return UserLinkReminderResponseDTO.from(userLinkReminder);
     }
+
+    public void deleteLinkReminder(Long reminderId) {
+        UserLinkReminder userLinkReminder = userLinkReminderRepository.findById(reminderId)
+                .orElseThrow(() -> new ReminderHandler(ErrorCode.REMINDER_NOT_FOUND));
+
+        userLinkReminderRepository.delete(userLinkReminder);
+    }
 }
