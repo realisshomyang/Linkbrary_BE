@@ -31,6 +31,11 @@ public enum ErrorCode implements BaseErrorCode {
     DIRECTORY_NOT_FOUND(HttpStatus.NOT_FOUND, "DIRECTORY4041", "해당 디렉토리가 존재하지 않습니다."),
     USER_REMINDER_SETTING_NOT_FOUND(HttpStatus.NOT_FOUND,"REMINDER4041", "유저의 리마인더 설정이 존재하지 않습니다."),
 
+    //리마인더 관련 에러
+    REMINDER_ALREADY_EXIST(HttpStatus.BAD_REQUEST,"REMINDER4001","이미 리마인더가 존재합니다.")
+    ,
+    REMINDER_NOT_FOUND(HttpStatus.NOT_FOUND,"REMINDER4041", "해당 리마인더가 존재하지 않습니다."),
+
     //API call 관련 에러
     API_GET_CALL_MODE_ERROR(HttpStatus.BAD_REQUEST, "API4001","해당 모드는 존재하지 않습니다.")
     ;
