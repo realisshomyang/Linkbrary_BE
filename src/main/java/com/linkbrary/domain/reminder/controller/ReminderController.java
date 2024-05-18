@@ -29,4 +29,11 @@ public class ReminderController {
     public ApiResponse<UserReminderSettingResponseDTO> getUserReminderSetting() {
         return ApiResponse.onSuccess(reminderService.getUserReminderSetting());
     }
+
+    @Operation(summary = "단일 링크 리마인더 생성용 api")
+    @PostMapping("/links")
+    public ApiResponse<UserLinkReminderResponseDTO> createLinkReminder(@Valid @RequestBody ReminderRequestDTO createLinkReminderRequestDTO) {
+        return ApiResponse.onSuccess(reminderService.createLinkReminder(createLinkReminderRequestDTO));
+    }
+
 }
