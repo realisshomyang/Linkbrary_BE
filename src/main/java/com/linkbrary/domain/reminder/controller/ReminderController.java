@@ -55,4 +55,9 @@ public class ReminderController {
         return ApiResponse.onSuccess("Link reminder deleted successfully");
     }
 
+    @Operation(summary = "디렉토리 리마인더 생성용 api")
+    @PostMapping("/directories")
+    public ApiResponse<UserDirectoryReminderResponseDTO> createDirectoryReminder(@Valid @RequestBody ReminderRequestDTO createLinkReminderRequestDTO) {
+        return ApiResponse.onSuccess(reminderService.createDirectoryReminder(createLinkReminderRequestDTO));
+    }
 }

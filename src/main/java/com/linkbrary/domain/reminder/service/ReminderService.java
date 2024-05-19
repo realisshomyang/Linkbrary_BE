@@ -4,11 +4,15 @@ import com.linkbrary.common.response.code.ErrorCode;
 import com.linkbrary.common.response.exception.handler.ReminderHandler;
 import com.linkbrary.common.response.exception.handler.UserHandler;
 import com.linkbrary.common.response.exception.handler.UserLinkHandler;
+import com.linkbrary.domain.directory.entity.UserDirectory;
+import com.linkbrary.domain.directory.repository.UserDirectoryRepository;
 import com.linkbrary.domain.link.entity.UserLink;
 import com.linkbrary.domain.link.repository.UserLinkRepository;
 import com.linkbrary.domain.reminder.dto.*;
+import com.linkbrary.domain.reminder.entity.UserDirectoryReminder;
 import com.linkbrary.domain.reminder.entity.UserLinkReminder;
 import com.linkbrary.domain.reminder.entity.UserReminderSetting;
+import com.linkbrary.domain.reminder.repository.UserDirectoryReminderRepository;
 import com.linkbrary.domain.reminder.repository.UserLinkReminderRepository;
 import com.linkbrary.domain.user.entity.Member;
 import com.linkbrary.domain.user.repository.UserReminderSettingRepository;
@@ -25,6 +29,8 @@ import java.util.stream.Collectors;
 public class ReminderService {
     private final UserService userService;
     private final UserLinkRepository userLinkRepository;
+    private final UserDirectoryReminderRepository userDirectoryReminderRepository;
+    private final UserDirectoryRepository userDirectoryRepository;
     private final UserLinkReminderRepository userLinkReminderRepository;
     private final UserReminderSettingRepository userReminderSettingRepository;
 
@@ -84,4 +90,22 @@ public class ReminderService {
 
         userLinkReminderRepository.delete(userLinkReminder);
     }
+
+    public UserDirectoryReminderResponseDTO createDirectoryReminder(ReminderRequestDTO createLinkReminderRequestDTO) {
+        Member member = userService.getMemberFromToken();
+        UserDirectory userDirectory = userDirectoryRepository.findById(createLinkReminderRequestDTO.getId()).orElseThrow(() -> new UserLinkHandler(ErrorCode.DIRECTORY_NOT_FOUND));
+        if (userDirectoryReminderRepository.existsByUserDirectory(userDirectory)) {
+            throw new ReminderHandler(ErrorCode.REMINDER_ALREADY_EXIST);
+        }
+        UserDirectoryReminder userDirectoryReminder = UserDirectoryReminder.builder()
+                .reminderTime(createLinkReminderRequestDTO.getReminderTime())
+                .member(member)
+                .onoff(createLinkReminderRequestDTO.isOnoff())
+                .reminderDays(createLinkReminderRequestDTO.getReminderDays())
+                .userDirectory(userDirectory)
+                .build();
+        userDirectoryReminderRepository.save(userDirectoryReminder);
+        return UserDirectoryReminderResponseDTO.from(userDirectoryReminder);
+    }
+
 }
