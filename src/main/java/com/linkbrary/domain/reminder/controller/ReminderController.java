@@ -60,4 +60,10 @@ public class ReminderController {
     public ApiResponse<UserDirectoryReminderResponseDTO> createDirectoryReminder(@Valid @RequestBody ReminderRequestDTO createLinkReminderRequestDTO) {
         return ApiResponse.onSuccess(reminderService.createDirectoryReminder(createLinkReminderRequestDTO));
     }
+
+    @Operation(summary = "유저가 디렉토리에 대해 설정한 모든 리마인더 조회")
+    @GetMapping("/directories")
+    public ApiResponse<List<UserDirectoryReminderResponseDTO>> getDirectoryReminderSettings() {
+        return ApiResponse.onSuccess(reminderService.getAllDirectoryReminders());
+    }
 }

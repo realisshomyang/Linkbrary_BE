@@ -108,4 +108,12 @@ public class ReminderService {
         return UserDirectoryReminderResponseDTO.from(userDirectoryReminder);
     }
 
+    public List<UserDirectoryReminderResponseDTO> getAllDirectoryReminders() {
+        Member member = userService.getMemberFromToken();
+        List<UserDirectoryReminder> userDirectoryReminders = userDirectoryReminderRepository.findAllByMember(member);
+        return userDirectoryReminders.stream()
+                .map(UserDirectoryReminderResponseDTO::from)
+                .collect(Collectors.toList());
+    }
+
 }
