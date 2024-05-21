@@ -72,4 +72,11 @@ public class ReminderController {
     public ApiResponse<UserDirectoryReminderResponseDTO> updateDirectoryReminder(@Valid @RequestBody ReminderRequestDTO updateRequestDTO) {
         return ApiResponse.onSuccess(reminderService.updateDirectoryReminder(updateRequestDTO));
     }
+
+    @Operation(summary = "유저가 설정한 디렉토리 리마인더 삭제")
+    @DeleteMapping("/directories/{id}")
+    public ApiResponse<String> deleteDirectoryReminder(@PathVariable Long id) {
+        reminderService.deleteDirectoryReminder(id);
+        return ApiResponse.onSuccess("Directory reminder deleted successfully");
+    }
 }

@@ -125,4 +125,10 @@ public class ReminderService {
         return UserDirectoryReminderResponseDTO.from(userDirectoryReminder);
     }
 
+    public void deleteDirectoryReminder(Long reminderId) {
+        UserDirectoryReminder userDirectoryReminder = userDirectoryReminderRepository.findById(reminderId)
+                .orElseThrow(() -> new ReminderHandler(ErrorCode.REMINDER_NOT_FOUND));
+
+        userDirectoryReminderRepository.delete(userDirectoryReminder);
+    }
 }
