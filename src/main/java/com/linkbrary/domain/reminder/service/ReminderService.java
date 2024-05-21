@@ -116,4 +116,13 @@ public class ReminderService {
                 .collect(Collectors.toList());
     }
 
+    public UserDirectoryReminderResponseDTO updateDirectoryReminder(ReminderRequestDTO updateRequestDTO) {
+        UserDirectoryReminder userDirectoryReminder = userDirectoryReminderRepository.findById(updateRequestDTO.getId())
+                .orElseThrow(() -> new ReminderHandler(ErrorCode.REMINDER_NOT_FOUND));
+        userDirectoryReminder.updateReminderTime(updateRequestDTO.getReminderTime());
+        userDirectoryReminder.updateReminderDays(updateRequestDTO.getReminderDays());
+        userDirectoryReminder = userDirectoryReminderRepository.save(userDirectoryReminder);
+        return UserDirectoryReminderResponseDTO.from(userDirectoryReminder);
+    }
+
 }

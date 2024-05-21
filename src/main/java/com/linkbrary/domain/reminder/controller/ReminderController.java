@@ -66,4 +66,10 @@ public class ReminderController {
     public ApiResponse<List<UserDirectoryReminderResponseDTO>> getDirectoryReminderSettings() {
         return ApiResponse.onSuccess(reminderService.getAllDirectoryReminders());
     }
+
+    @Operation(summary = "유저가 설정한 디렉토리 리마인더 수정")
+    @PutMapping("/directories")
+    public ApiResponse<UserDirectoryReminderResponseDTO> updateDirectoryReminder(@Valid @RequestBody ReminderRequestDTO updateRequestDTO) {
+        return ApiResponse.onSuccess(reminderService.updateDirectoryReminder(updateRequestDTO));
+    }
 }
