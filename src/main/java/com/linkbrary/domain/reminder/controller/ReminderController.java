@@ -85,4 +85,12 @@ public class ReminderController {
     public ApiResponse<UserReminderResponseDTO> getAllReminderSettings() {
         return ApiResponse.onSuccess(reminderService.getAllReminders());
     }
+
+    @Operation(summary = "디렉토리 리마인더 on off")
+    @PutMapping("/directories/on-off")
+    public ApiResponse<String> updateDirectoryReminderOnOff(@Valid @RequestBody UpdateOnOFFRequestDTO updateOnOFFRequestDTO) {
+        reminderService.updateDirectoryReminderOnOFF(updateOnOFFRequestDTO);
+        return ApiResponse.onSuccess("Directory reminder on/off 변경 완료");
+    }
+
 }

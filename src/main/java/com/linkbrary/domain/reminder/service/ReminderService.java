@@ -139,4 +139,10 @@ public class ReminderService {
         return UserReminderResponseDTO.from(userLinkReminders, userDirectoryReminders);
     }
 
+    public void updateDirectoryReminderOnOFF(UpdateOnOFFRequestDTO updateOnOFFRequestDTO) {
+        UserDirectoryReminder userDirectoryReminder = userDirectoryReminderRepository.findById(updateOnOFFRequestDTO.getId()).orElseThrow(() -> new ReminderHandler(ErrorCode.REMINDER_NOT_FOUND));
+        userDirectoryReminder.updateOnoff(updateOnOFFRequestDTO.isOnoff());
+        userDirectoryReminderRepository.save(userDirectoryReminder);
+    }
+
 }
