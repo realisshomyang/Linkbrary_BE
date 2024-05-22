@@ -93,4 +93,10 @@ public class ReminderController {
         return ApiResponse.onSuccess("Directory reminder on/off 변경 완료");
     }
 
+    @Operation(summary = "링크 리마인더 on off")
+    @PutMapping("/links/on-off")
+    public ApiResponse<String> updateLinkReminderOnOff(@Valid @RequestBody UpdateOnOFFRequestDTO updateOnOFFRequestDTO) {
+        reminderService.updateLinkReminderOnOFF(updateOnOFFRequestDTO);
+        return ApiResponse.onSuccess("Link reminder on/off 변경 완료");
+    }
 }
