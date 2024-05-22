@@ -131,4 +131,12 @@ public class ReminderService {
 
         userDirectoryReminderRepository.delete(userDirectoryReminder);
     }
+
+    public UserReminderResponseDTO getAllReminders() {
+        Member member = userService.getMemberFromToken();
+        List<UserLinkReminder> userLinkReminders = userLinkReminderRepository.findAllByMember(member);
+        List<UserDirectoryReminder> userDirectoryReminders = userDirectoryReminderRepository.findAllByMember(member);
+        return UserReminderResponseDTO.from(userLinkReminders, userDirectoryReminders);
+    }
+
 }

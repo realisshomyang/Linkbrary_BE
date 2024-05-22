@@ -79,4 +79,10 @@ public class ReminderController {
         reminderService.deleteDirectoryReminder(id);
         return ApiResponse.onSuccess("Directory reminder deleted successfully");
     }
+
+    @Operation(summary = "유저가 설정한 모든 리마인더 조회")
+    @GetMapping("all")
+    public ApiResponse<UserReminderResponseDTO> getAllReminderSettings() {
+        return ApiResponse.onSuccess(reminderService.getAllReminders());
+    }
 }
