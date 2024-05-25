@@ -1,11 +1,15 @@
 package com.linkbrary.domain.notification;
 
 
+import com.linkbrary.domain.link.entity.UserLink;
+import com.linkbrary.domain.link.repository.UserLinkRepository;
 import com.linkbrary.domain.reminder.entity.UserDirectoryReminder;
 import com.linkbrary.domain.reminder.entity.UserLinkReminder;
 import com.linkbrary.domain.reminder.repository.UserDirectoryReminderRepository;
 import com.linkbrary.domain.reminder.repository.UserLinkReminderRepository;
 import com.linkbrary.domain.user.entity.Member;
+import com.linkbrary.domain.user.repository.MemberRepository;
+import com.linkbrary.domain.user.repository.UserReminderSettingRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -23,8 +27,35 @@ import static com.linkbrary.common.util.CallExternalApi.sendNotification;
 @Slf4j
 @RequiredArgsConstructor
 public class SendNotificationService {
+    private final UserReminderSettingRepository userReminderSettingRepository;
+    private final UserLinkRepository userLinkRepository;
     private final UserLinkReminderRepository userLinkReminderRepository;
     private final UserDirectoryReminderRepository userDirectoryReminderRepository;
+    private final MemberRepository memberRepository;
+
+    @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
+    public void sendUnreadUserLinkNotifications() {
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            LocalTime unreadAlertTime = member.getUserReminderSetting().getUnreadAlertTime();
+            Duration duration = Duration.ofHours(unreadAlertTime.getHour())
+                    .plusMinutes(unreadAlertTime.getMinute())
+                    .plusSeconds(unreadAlertTime.getSecond());
+            LocalDateTime thresholdDateTime = LocalDateTime.now().minus(duration);
+            List<UserLink> userLinks = userLinkRepository.findUnreadUserLinks(member.getId(), thresholdDateTime);
+            if (!userLinks.isEmpty()) {
+                if (member.getToken() != null) {
+                    String title = member.getNickname() + "님이 저장 후 안읽은 링크가 있어요!";
+                    String body = "“" + userLinks.get(0).getLink().getTitle() + "” 링크를 확인하세요!";
+                    Long id = userLinks.get(0).getUserDirectory().getId();
+                    sendNotification(member.getToken(), title, body, id.toString());
+                }
+            }
+            userLinks.forEach(UserLink::updateIsAlarmedTrue);
+            userLinkRepository.saveAll(userLinks);
+        }
+    }
+
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void sendDirectoryReminderByMinute() {
