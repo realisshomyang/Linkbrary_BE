@@ -1,6 +1,8 @@
 package com.linkbrary.domain.notification;
 
 
+import com.linkbrary.domain.directory.entity.UserDirectory;
+import com.linkbrary.domain.directory.repository.UserDirectoryRepository;
 import com.linkbrary.domain.link.entity.UserLink;
 import com.linkbrary.domain.link.repository.UserLinkRepository;
 import com.linkbrary.domain.reminder.entity.UserDirectoryReminder;
@@ -29,9 +31,29 @@ import static com.linkbrary.common.util.CallExternalApi.sendNotification;
 public class SendNotificationService {
     private final UserReminderSettingRepository userReminderSettingRepository;
     private final UserLinkRepository userLinkRepository;
+    private final UserDirectoryRepository userDirectoryRepository;
     private final UserLinkReminderRepository userLinkReminderRepository;
     private final UserDirectoryReminderRepository userDirectoryReminderRepository;
     private final MemberRepository memberRepository;
+
+    @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul")
+    public void sendUnreadUserDirectoryNotifications() {
+        List<Member> members = memberRepository.findAll();
+        for (Member member : members) {
+            List<UserDirectory> userDirectories = userDirectoryRepository.findUserDirectoriesWithUnreadLinksExceedingReminderSetting(member.getId());
+            if (!userDirectories.isEmpty()) {
+                String title = member.getNickname() + "님의 디렉토리에 안읽은 링크가 쌓여있어요!";
+                String body = "“" + userDirectories.get(0).getDirectoryName() + "” 디렉토리를 확인하세요!";
+                Long id = userDirectories.get(0).getId();
+                if (member.getToken() != null) {
+                    sendNotification(member.getToken(), title, body, id.toString());
+                }
+            }
+            userDirectories.forEach(UserDirectory::updateIsAlarmedTrue);
+            userDirectoryRepository.saveAll(userDirectories);
+
+        }
+    }
 
     @Scheduled(cron = "0 * * * * *", zone = "Asia/Seoul")
     public void sendUnreadUserLinkNotifications() {
