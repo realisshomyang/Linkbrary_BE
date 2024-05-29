@@ -36,6 +36,14 @@ public class SendNotificationService {
     private final UserDirectoryReminderRepository userDirectoryReminderRepository;
     private final MemberRepository memberRepository;
 
+    @Scheduled(cron = "0 0 12 * * ?", zone = "Asia/Seoul")
+    public void resetAlarmedStatus() {
+        List<UserLink> userLinks = userLinkRepository.findAll();
+        List<UserDirectory> userDirectories = userDirectoryRepository.findAll();
+        userLinks.forEach(UserLink::updateIsAlarmedFalse);
+        userDirectories.forEach(UserDirectory::updateIsAlarmedFalse);
+    }
+
     @Scheduled(cron = "0 0 * * * *", zone = "Asia/Seoul")
     public void sendUnreadUserDirectoryNotifications() {
         List<Member> members = memberRepository.findAll();
